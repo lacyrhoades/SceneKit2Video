@@ -2,7 +2,6 @@
 Demo project: High-def video output from SCNKit
 
     var options = VideoRendererOptions()
-    options.sceneDuration = self.rotationDuration * TimeInterval(self.totalRotations)
     options.videoSize = CGSize(width: 1280, height: 720)
     options.fps = 60
 
@@ -14,7 +13,6 @@ Demo project: High-def video output from SCNKit
         },
         andThen: {
             outputPath in
-            
             print("Video file at: ".appending(outputPath))
         }
     )
