@@ -32,40 +32,14 @@ class ViewController: UIViewController {
         self.scene.background.contents = UIColor.black
         
         let redMaterial = SCNMaterial()
-        redMaterial.reflective.contents = UIColor.red
-        let greenMaterial = SCNMaterial()
-        greenMaterial.emission.contents = UIColor.green
-        let blueMaterial = SCNMaterial()
-        blueMaterial.reflective.contents = UIColor.blue
-        let yellowMaterial = SCNMaterial()
-        yellowMaterial.reflective.contents = UIColor.yellow
+        redMaterial.diffuse.contents = UIColor.red
+        redMaterial.specular.contents = UIColor.white
         
-        let cube = SCNBox(width: 35, height: 35, length: 35, chamferRadius: 1.0)
-        cube.materials = [greenMaterial]
+        let cube = SCNBox(width: 35, height: 35, length: 35, chamferRadius: 0)
+        cube.materials = [redMaterial]
         let cubeGeometryNode = SCNNode(geometry: cube)
-        cubeGeometryNode.eulerAngles = SCNVector3Make(0.0, 1.0, 0.0)
-        cubeGeometryNode.position = SCNVector3Make(100.0, 0.0, 0.0)
+        cubeGeometryNode.position = SCNVector3Make(0.0, 0.0, -75.0)
         scene.rootNode.addChildNode(cubeGeometryNode)
-        
-        let cylinder = SCNCylinder(radius: 8, height: 20)
-        cylinder.materials = [redMaterial]
-        let cylinderGeometryNode = SCNNode(geometry: cylinder)
-        cylinderGeometryNode.eulerAngles = SCNVector3Make(1.0, 1.0, 2.0)
-        cylinderGeometryNode.position = SCNVector3Make(0.0, 0.0, 70.0)
-        scene.rootNode.addChildNode(cylinderGeometryNode)
-        
-        let torus = SCNTorus(ringRadius: 43.0, pipeRadius: 3.0)
-        torus.materials = [blueMaterial]
-        let torusGeometryNode = SCNNode(geometry: torus)
-        torusGeometryNode.position = SCNVector3Make(0.0, 0.0, -100.0)
-        torusGeometryNode.eulerAngles = SCNVector3Make(Float.pi / 2.0, 0.0, 0.0)
-        scene.rootNode.addChildNode(torusGeometryNode)
-        
-        let sphere = SCNSphere(radius: 25.0)
-        sphere.materials = [yellowMaterial]
-        let sphereGeometryNode = SCNNode(geometry: sphere)
-        sphereGeometryNode.position = SCNVector3Make(-100.0, 0.0, 0.0)
-        scene.rootNode.addChildNode(sphereGeometryNode)
         
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -78,11 +52,11 @@ class ViewController: UIViewController {
         cameraBoxNode.addChildNode(cameraNode)
         scene.rootNode.addChildNode(cameraBoxNode)
         
-        cameraBoxNode.runAction(
+        cubeGeometryNode.runAction(
             SCNAction.repeatForever(
                 SCNAction.sequence(
                     [
-                        SCNAction.rotateBy(x: 0.0, y: -2 * CGFloat.pi, z: 0.0, duration: self.rotationDuration),
+                        SCNAction.rotateBy(x: 0.0, y: 2 * CGFloat.pi, z: 2 * CGFloat.pi, duration: self.rotationDuration),
                         SCNAction.run({ (node) in
                             self.rotations += 1
                         })
@@ -96,11 +70,10 @@ class ViewController: UIViewController {
         
         self.videoRenderer.delegate = self
         
-        let options = VideoRendererOptions(
-            sceneDuration: self.rotationDuration * TimeInterval(self.totalRotations),
-            videoSize: CGSize(width: 1280, height: 720),
-            fps: 60
-        )
+        var options = VideoRendererOptions()
+        options.sceneDuration = self.rotationDuration * TimeInterval(self.totalRotations)
+        options.videoSize = CGSize(width: 1280, height: 720)
+        options.fps = 60
         
         let startTime = Date()
         self.videoRenderer.render(

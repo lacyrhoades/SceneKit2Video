@@ -1,6 +1,8 @@
 # SCNKit2Video
 Demo project: High-def video output from SCNKit
 
+![Video files from SCNKit scenes](/README.png)
+
     var options = VideoRendererOptions()
     options.videoSize = CGSize(width: 1280, height: 720)
     options.fps = 60
