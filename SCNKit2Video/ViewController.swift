@@ -12,8 +12,10 @@ class ViewController: UIViewController {
     
     var videoRenderer = VideoRenderer()
     
-    // Image view to preview each 3d render frame
-    // Not required to create a video file
+    var rotations: Int = 0
+    let totalRotations: Int = 1
+    var rotationDuration: TimeInterval = 12.0
+    
     @IBOutlet var imageView: UIImageView?
     
     override func viewDidLoad() {
@@ -24,10 +26,7 @@ class ViewController: UIViewController {
         self.renderScene()
     }
     
-    var rotations: Int = 0
     var scene: SCNScene!
-    var cameraNode: SCNNode!
-    var cameraBoxNode: SCNNode!
     func setupScene() {
         self.scene = SCNScene()
         self.scene.background.contents = UIColor.black
@@ -68,24 +67,23 @@ class ViewController: UIViewController {
         sphereGeometryNode.position = SCNVector3Make(-100.0, 0.0, 0.0)
         scene.rootNode.addChildNode(sphereGeometryNode)
         
-        self.cameraNode = SCNNode()
-        self.cameraNode.camera = SCNCamera()
-        self.cameraNode.camera?.zNear = 0
-        self.cameraNode.camera?.zFar = 1000
-        self.cameraNode.position = SCNVector3Make(0, 0, 0)
-        self.cameraNode.eulerAngles = SCNVector3Make(0.0, 0.0, 0.0)
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        cameraNode.camera?.zNear = 0
+        cameraNode.camera?.zFar = 1000
+        cameraNode.position = SCNVector3Make(0, 0, 0)
+        cameraNode.eulerAngles = SCNVector3Make(0.0, 0.0, 0.0)
         
-        self.cameraBoxNode = SCNNode()
-        self.cameraBoxNode.addChildNode(self.cameraNode)
-        scene.rootNode.addChildNode(self.cameraBoxNode)
+        let cameraBoxNode = SCNNode()
+        cameraBoxNode.addChildNode(cameraNode)
+        scene.rootNode.addChildNode(cameraBoxNode)
         
-        self.cameraBoxNode.runAction(
+        cameraBoxNode.runAction(
             SCNAction.repeatForever(
                 SCNAction.sequence(
                     [
-                        SCNAction.rotateBy(x: 0.0, y: -2 * CGFloat.pi, z: 0.0, duration: 12.0),
+                        SCNAction.rotateBy(x: 0.0, y: -2 * CGFloat.pi, z: 0.0, duration: self.rotationDuration),
                         SCNAction.run({ (node) in
-                            print("DONE")
                             self.rotations += 1
                         })
                     ]
@@ -95,24 +93,35 @@ class ViewController: UIViewController {
     }
     
     func renderScene() {
+        
         self.videoRenderer.delegate = self
         
+        let options = VideoRendererOptions(
+            sceneDuration: self.rotationDuration * TimeInterval(self.totalRotations),
+            videoSize: CGSize(width: 1280, height: 720),
+            fps: 60
+        )
+        
+        let startTime = Date()
         self.videoRenderer.render(
             scene: self.scene,
+            withOptions: options,
             until: {
-                return self.rotations > 0
-        },
+                return self.rotations >= self.totalRotations
+            },
             andThen: {
                 outputPath in
                 
+                print(
+                    String(format:"Finished render in time: %.2fs", startTime.timeIntervalSinceNow * -1)
+                )
+                
                 PhotosUtil.saveVideo(atPath: outputPath)
                 
-                let alert = UIAlertController(title: "Done", message: "Video has been created at ".appending(outputPath), preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
-                    //
-                }))
+                let alert = UIAlertController(title: "Done", message: "A new video has been added to the Camera Roll", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true)
-        }
+            }
         )
     }
 }
@@ -125,6 +134,6 @@ extension ViewController: VideoRendererDelegate {
     }
     
     func videoRenderer(pogressUpdated to: Float) {
-        print(to)
+        // print(to)
     }
 }
