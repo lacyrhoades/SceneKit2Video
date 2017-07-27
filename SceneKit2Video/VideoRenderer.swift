@@ -1,6 +1,6 @@
 //
 //  VideoRenderer.swift
-//  SCNKit2Video
+//  SceneKit2Video
 //
 //  Created by Lacy Rhoades on 7/20/17.
 //  Copyright © 2017 Lacy Rhoades. All rights reserved.
@@ -27,11 +27,11 @@ class VideoRenderer {
     
     private var frameNumber: Int = 0
     
+    private var scene: SCNScene?
     var assetWriter: AVAssetWriter?
     var assetWriterInput: AVAssetWriterInput?
     
-    func render( scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: String) -> () ) {
-        self.frameNumber = 0
+    func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: String) -> () ) {
         
         let videoSize = options.videoSize
         
@@ -40,6 +40,7 @@ class VideoRenderer {
         let kTimescale: Int32 = 600
         let frameDuration = CMTimeMake(Int64(kTimescale / fps), kTimescale)
         
+        self.frameNumber = 0
         var totalFrames: Int?
         if let totalTime = options.sceneDuration {
             totalFrames = Int(fps) * Int(ceil(totalTime))
@@ -79,6 +80,7 @@ class VideoRenderer {
             kCVPixelBufferWidthKey as String: videoSize.width,
             kCVPixelBufferHeightKey as String: videoSize.height
         ]
+        
         let pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(
             assetWriterInput: input,
             sourcePixelBufferAttributes: attributes

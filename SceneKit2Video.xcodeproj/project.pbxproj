@@ -18,7 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0FCF771A1F20FEDA00C7058B /* SCNKit2Video.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SCNKit2Video.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FCF771A1F20FEDA00C7058B /* SceneKit2Video.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SceneKit2Video.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FCF771D1F20FEDA00C7058B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0FCF771F1F20FEDA00C7058B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		0FCF77221F20FEDA00C7058B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -44,7 +44,7 @@
 		0FCF77111F20FEDA00C7058B = {
 			isa = PBXGroup;
 			children = (
-				0FCF771C1F20FEDA00C7058B /* SCNKit2Video */,
+				0FCF771C1F20FEDA00C7058B /* SceneKit2Video */,
 				0FCF771B1F20FEDA00C7058B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,12 +52,12 @@
 		0FCF771B1F20FEDA00C7058B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0FCF771A1F20FEDA00C7058B /* SCNKit2Video.app */,
+				0FCF771A1F20FEDA00C7058B /* SceneKit2Video.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0FCF771C1F20FEDA00C7058B /* SCNKit2Video */ = {
+		0FCF771C1F20FEDA00C7058B /* SceneKit2Video */ = {
 			isa = PBXGroup;
 			children = (
 				0FCF771D1F20FEDA00C7058B /* AppDelegate.swift */,
@@ -70,15 +70,15 @@
 				0FCF77311F20FF5700C7058B /* PhotosUtil.swift */,
 				0FCF77331F20FF6400C7058B /* FileUtil.swift */,
 			);
-			path = SCNKit2Video;
+			path = SceneKit2Video;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0FCF77191F20FEDA00C7058B /* SCNKit2Video */ = {
+		0FCF77191F20FEDA00C7058B /* SceneKit2Video */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0FCF772C1F20FEDA00C7058B /* Build configuration list for PBXNativeTarget "SCNKit2Video" */;
+			buildConfigurationList = 0FCF772C1F20FEDA00C7058B /* Build configuration list for PBXNativeTarget "SceneKit2Video" */;
 			buildPhases = (
 				0FCF77161F20FEDA00C7058B /* Sources */,
 				0FCF77171F20FEDA00C7058B /* Frameworks */,
@@ -88,9 +88,9 @@
 			);
 			dependencies = (
 			);
-			name = SCNKit2Video;
-			productName = SCNKit2Video;
-			productReference = 0FCF771A1F20FEDA00C7058B /* SCNKit2Video.app */;
+			name = SceneKit2Video;
+			productName = SceneKit2Video;
+			productReference = 0FCF771A1F20FEDA00C7058B /* SceneKit2Video.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -105,11 +105,12 @@
 				TargetAttributes = {
 					0FCF77191F20FEDA00C7058B = {
 						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = QUT3GY8XHF;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 0FCF77151F20FEDA00C7058B /* Build configuration list for PBXProject "SCNKit2Video" */;
+			buildConfigurationList = 0FCF77151F20FEDA00C7058B /* Build configuration list for PBXProject "SceneKit2Video" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -122,7 +123,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0FCF77191F20FEDA00C7058B /* SCNKit2Video */,
+				0FCF77191F20FEDA00C7058B /* SceneKit2Video */,
 			);
 		};
 /* End PBXProject section */
@@ -274,9 +275,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = SCNKit2Video/Info.plist;
+				DEVELOPMENT_TEAM = QUT3GY8XHF;
+				INFOPLIST_FILE = SceneKit2Video/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SCNKit2Video;
+				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SceneKit2Video;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -286,9 +288,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = SCNKit2Video/Info.plist;
+				DEVELOPMENT_TEAM = QUT3GY8XHF;
+				INFOPLIST_FILE = SceneKit2Video/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SCNKit2Video;
+				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SceneKit2Video;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -297,7 +300,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0FCF77151F20FEDA00C7058B /* Build configuration list for PBXProject "SCNKit2Video" */ = {
+		0FCF77151F20FEDA00C7058B /* Build configuration list for PBXProject "SceneKit2Video" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0FCF772A1F20FEDA00C7058B /* Debug */,
@@ -306,7 +309,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0FCF772C1F20FEDA00C7058B /* Build configuration list for PBXNativeTarget "SCNKit2Video" */ = {
+		0FCF772C1F20FEDA00C7058B /* Build configuration list for PBXNativeTarget "SceneKit2Video" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0FCF772D1F20FEDA00C7058B /* Debug */,

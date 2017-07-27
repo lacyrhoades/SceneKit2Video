@@ -1,6 +1,6 @@
 //
 //  PhotosUtil.swift
-//  SCNKit2Video
+//  SceneKit2Video
 //
 //  Created by Lacy Rhoades on 7/20/17.
 //  Copyright © 2017 Lacy Rhoades. All rights reserved.
