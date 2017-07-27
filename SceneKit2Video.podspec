@@ -19,5 +19,5 @@ from there.
 
   s.ios.deployment_target = '10.0'
 
-  s.source_files = 'Swift/Classes/**/*'
+  s.source_files = 'Classes/**/*'
 end
