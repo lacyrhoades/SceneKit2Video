@@ -18,6 +18,10 @@ public struct VideoRendererOptions {
     var sceneDuration: TimeInterval?
     var videoSize = CGSize(width: 1280, height: 720)
     var fps: Int = 60
+    
+    public init() {
+        
+    }
 }
 
 public class VideoRenderer {
