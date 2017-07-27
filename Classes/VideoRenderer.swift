@@ -11,13 +11,13 @@ import AVFoundation
 
 public protocol VideoRendererDelegate: class {
     func videoRenderer(createdNewImage image: UIImage)
-    func videoRenderer(pogressUpdated to: Float)
+    func videoRenderer(progressUpdated to: Float)
 }
 
 public struct VideoRendererOptions {
-    var sceneDuration: TimeInterval?
-    var videoSize = CGSize(width: 1280, height: 720)
-    var fps: Int = 60
+    public var sceneDuration: TimeInterval?
+    public var videoSize = CGSize(width: 1280, height: 720)
+    public var fps: Int = 60
     
     public init() {
         
@@ -39,7 +39,7 @@ public class VideoRenderer {
     var assetWriter: AVAssetWriter?
     var assetWriterInput: AVAssetWriterInput?
     
-    public func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: String) -> () ) {
+    public func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: URL) -> () ) {
         
         let videoSize = options.videoSize
         
@@ -58,10 +58,9 @@ public class VideoRenderer {
         self.renderer.scene = scene
         self.renderer.autoenablesDefaultLighting = true
         
-        let path = NSTemporaryDirectory().appending("tmp.mp4")
-        let url = URL(fileURLWithPath: path)
+        let url = FileUtil.newTempFileURL
         
-        FileUtil.removeFile(atPath: path)
+        FileUtil.removeFile(at: url)
         
         do {
             self.assetWriter = try AVAssetWriter(outputURL: url, fileType: AVFileTypeAppleM4V)
@@ -102,7 +101,7 @@ public class VideoRenderer {
                 self.assetWriterInput?.markAsFinished()
                 self.assetWriter?.finishWriting {
                     DispatchQueue.main.async {
-                        andThen(path)
+                        andThen(url)
                     }
                     return
                 }
@@ -125,7 +124,7 @@ public class VideoRenderer {
                 self.delegate?.videoRenderer(createdNewImage: image)
                 if let totalFrames = totalFrames {
                     self.delegate?.videoRenderer(
-                        pogressUpdated: min(1, Float(self.frameNumber)/Float(totalFrames))
+                        progressUpdated: min(1, Float(self.frameNumber)/Float(totalFrames))
                     )
                 }
             }

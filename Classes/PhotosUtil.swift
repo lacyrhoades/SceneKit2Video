@@ -10,16 +10,17 @@ import Foundation
 import Photos
 
 class PhotosUtil {
-    static func saveVideo(atPath path: String) {
-        assert(FileUtil.fileExists(atPath: path), "Check for file output")
+    static func saveVideo(at url: URL) {
+        assert(FileUtil.fileExists(at: url), "Check for file output")
         
         DispatchQueue.global(qos: .utility).async {
             PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: path))
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
             }) { (done, err) in
                 if err != nil {
+                    print("Tried to save video at path: ".appending(url.path))
                     print("Error creating video file in library")
-                    print(err.debugDescription)
+                    print(err?.localizedDescription as Any)
                 } else {
                     print("Done writing asset to the user's photo library")
                 }

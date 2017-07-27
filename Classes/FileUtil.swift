@@ -10,12 +10,12 @@ import Foundation
 
 class FileUtil {
     
-    @discardableResult class func removeFile(atPath path: String) -> Bool {
-        if FileManager.default.fileExists(atPath: path) {
+    @discardableResult class func removeFile(at url: URL) -> Bool {
+        if FileManager.default.fileExists(atPath: url.path) {
             do {
-                try FileManager.default.removeItem(atPath: path)
+                try FileManager.default.removeItem(atPath: url.path)
             } catch {
-                print("Problem with deleting file in FileUtil")
+                print("Problem with deleting file in FileUtil ".appending(url.path))
                 return false
             }
         }
@@ -23,11 +23,15 @@ class FileUtil {
         return true
     }
     
-    class func fileExists(atPath path: String) -> Bool {
-        return FileManager.default.fileExists(atPath: path)
+    static func fileExists(at url: URL) -> Bool {
+        return FileManager.default.fileExists(atPath: url.path)
     }
     
-    class func tempFileDirectory() -> URL {
-        return URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("fobo")
+    static var tempFileDirectory: URL {
+        return URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("SceneKit2Video")
+    }
+    
+    static var newTempFileURL: URL {
+        return tempFileDirectory.appendingPathComponent(String(format: "%@.mp4", UUID().uuidString))
     }
 }
