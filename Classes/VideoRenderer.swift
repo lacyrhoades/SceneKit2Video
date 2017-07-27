@@ -9,18 +9,18 @@
 import SceneKit
 import AVFoundation
 
-protocol VideoRendererDelegate: class {
+public protocol VideoRendererDelegate: class {
     func videoRenderer(createdNewImage image: UIImage)
     func videoRenderer(pogressUpdated to: Float)
 }
 
-struct VideoRendererOptions {
+public struct VideoRendererOptions {
     var sceneDuration: TimeInterval?
     var videoSize = CGSize(width: 1280, height: 720)
     var fps: Int = 60
 }
 
-class VideoRenderer {
+public class VideoRenderer {
     weak var delegate: VideoRendererDelegate?
     
     var renderer: SCNRenderer!
