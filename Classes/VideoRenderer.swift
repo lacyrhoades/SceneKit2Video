@@ -25,19 +25,19 @@ public struct VideoRendererOptions {
 }
 
 public class VideoRenderer {
+    public weak var delegate: VideoRendererDelegate?
+    
     public init() {
     
     }
     
-    public weak var delegate: VideoRendererDelegate?
-    
-    var renderer: SCNRenderer!
+    private var renderer: SCNRenderer!
     
     private var frameNumber: Int = 0
     
     private var scene: SCNScene?
-    var assetWriter: AVAssetWriter?
-    var assetWriterInput: AVAssetWriterInput?
+    private var assetWriter: AVAssetWriter?
+    private var assetWriterInput: AVAssetWriterInput?
     
     public func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: URL) -> () ) {
         
@@ -60,7 +60,11 @@ public class VideoRenderer {
         
         let url = FileUtil.newTempFileURL
         
-        FileUtil.removeFile(at: url)
+        if FileUtil.fileExists(at: url) {
+            FileUtil.removeFile(at: url)
+        } else {
+            FileUtil.mkdirUsingFile(at: url)
+        }
         
         do {
             self.assetWriter = try AVAssetWriter(outputURL: url, fileType: AVFileTypeAppleM4V)

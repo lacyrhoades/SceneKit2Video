@@ -16,10 +16,12 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // Renders while showing output on self.view
-        // self.renderScene(withRotations: 1, withDelegate: self)
+        DispatchQueue.global().async {
+            self.renderScene(withRotations: 1, withDelegate: self)
+        }
         
         // You can also render "headeless" in the background
-        // self.renderScene(withRotations: 3)
+        self.renderScene(withRotations: 3)
     }
     
     func renderScene(withRotations rotations: Int, withDelegate delegate: VideoRendererDelegate? = nil) {
@@ -44,7 +46,10 @@ class ViewController: UIViewController {
                 outputURL in
                 
                 print(
-                    String(format:"Finished render in time: %.2fs", startTime.timeIntervalSinceNow * -1)
+                    String(
+                        format:"Finished render in time: %.2fs",
+                        startTime.timeIntervalSinceNow * -1
+                    )
                 )
                 
                 PhotosUtil.saveVideo(at: outputURL)
