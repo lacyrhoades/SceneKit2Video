@@ -21,7 +21,11 @@ public struct VideoRendererOptions {
 }
 
 public class VideoRenderer {
-    weak var delegate: VideoRendererDelegate?
+    public init() {
+    
+    }
+    
+    public weak var delegate: VideoRendererDelegate?
     
     var renderer: SCNRenderer!
     
@@ -31,7 +35,7 @@ public class VideoRenderer {
     var assetWriter: AVAssetWriter?
     var assetWriterInput: AVAssetWriterInput?
     
-    func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: String) -> () ) {
+    public func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: String) -> () ) {
         
         let videoSize = options.videoSize
         
