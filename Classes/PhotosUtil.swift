@@ -10,7 +10,7 @@ import Foundation
 import Photos
 
 class PhotosUtil {
-    static func saveVideo(at url: URL) {
+    static func saveVideo(at url: URL, andThen: @escaping () -> ()) {
         assert(FileUtil.fileExists(at: url), "Check for file output")
         
         DispatchQueue.global(qos: .utility).async {
@@ -24,6 +24,8 @@ class PhotosUtil {
                 } else {
                     print("Done writing asset to the user's photo library")
                 }
+                
+                andThen()
             }
         }
     }

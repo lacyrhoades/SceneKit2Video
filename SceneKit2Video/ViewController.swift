@@ -12,19 +12,24 @@ class ViewController: UIViewController {
     
     @IBOutlet var imageView: UIImageView?
     
+    var rendersInProgress: Int = 0
+    var filesQueue = DispatchQueue(label: "net.colordeaf.SceneKit2Video.FilesQueue")
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         // Renders while showing output on self.view
-        DispatchQueue.global().async {
-            self.renderScene(withRotations: 1, withDelegate: self)
-        }
+        self.renderScene(withRotations: 1, withDelegate: self)
         
         // You can also render "headeless" in the background
         self.renderScene(withRotations: 3)
     }
     
     func renderScene(withRotations rotations: Int, withDelegate delegate: VideoRendererDelegate? = nil) {
+        self.filesQueue.sync {
+            self.rendersInProgress += 1
+        }
+        
         let scene = DemoCubeScene(rotations: rotations) // any SCNScene object / subclass
         
         var options = VideoRendererOptions()
@@ -52,13 +57,27 @@ class ViewController: UIViewController {
                     )
                 )
                 
-                PhotosUtil.saveVideo(at: outputURL)
+                PhotosUtil.saveVideo(at: outputURL, andThen: {
+                    self.cleanupOldFiles()
+                })
                 
                 let alert = UIAlertController(title: "Done", message: "A new video has been added to the Camera Roll", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true)
             }
         )
+    }
+    
+    func cleanupOldFiles() {
+        self.filesQueue.sync {
+            self.rendersInProgress -= 1
+            
+            assert(self.rendersInProgress >= 0, "Should never decrement this below zero")
+            
+            if self.rendersInProgress == 0 {
+                VideoRenderer.cleanUpTemporaryFiles()
+            }
+        }
     }
 }
 

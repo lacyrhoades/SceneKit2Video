@@ -39,6 +39,39 @@ class FileUtil {
         return true
     }
     
+    class func cleanDirUsingFile(at url: URL) {
+        let dirPath = url.deletingLastPathComponent().path
+        let manager = FileManager.default
+    
+        var contents: [String] = []
+        
+        do {
+            contents = try manager.contentsOfDirectory(atPath: dirPath)
+        } catch {
+            print("Cleanup failed")
+            print("Can't get contents of dir ", dirPath)
+            do {
+                print("Creating dir ".appending(dirPath))
+                try manager.createDirectory(atPath: dirPath, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("Could not create dir")
+            }
+            
+            return
+        }
+        
+        for file in contents {
+            let filepath = String(format: "%@/%@", dirPath, file)
+            
+            do {
+                try manager.removeItem(atPath: filepath)
+                print("Removed old file: ", file)
+            } catch {
+                print("Trouble removing old file:", filepath)
+            }
+        }
+    }
+    
     static func fileExists(at url: URL) -> Bool {
         return FileManager.default.fileExists(atPath: url.path)
     }

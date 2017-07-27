@@ -43,6 +43,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F2E6F331F2A8E26001F014E /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				0FCF772F1F20FF2000C7058B /* VideoRenderer.swift */,
+				0FCF77311F20FF5700C7058B /* PhotosUtil.swift */,
+				0FCF77331F20FF6400C7058B /* FileUtil.swift */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		0F2E6F341F2A8E34001F014E /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				0FCF771D1F20FEDA00C7058B /* AppDelegate.swift */,
+				0FCF771F1F20FEDA00C7058B /* ViewController.swift */,
+				0FCF77211F20FEDA00C7058B /* Main.storyboard */,
+				0FCF77241F20FEDA00C7058B /* Assets.xcassets */,
+				0FCF77261F20FEDA00C7058B /* LaunchScreen.storyboard */,
+				0FCF77291F20FEDA00C7058B /* Info.plist */,
+				0F2E6F311F2A76EE001F014E /* DemoCubeScene.swift */,
+			);
+			name = Demo;
+			sourceTree = "<group>";
+		};
 		0FCF77111F20FEDA00C7058B = {
 			isa = PBXGroup;
 			children = (
@@ -62,16 +86,8 @@
 		0FCF771C1F20FEDA00C7058B /* SceneKit2Video */ = {
 			isa = PBXGroup;
 			children = (
-				0FCF771D1F20FEDA00C7058B /* AppDelegate.swift */,
-				0FCF771F1F20FEDA00C7058B /* ViewController.swift */,
-				0FCF77211F20FEDA00C7058B /* Main.storyboard */,
-				0FCF77241F20FEDA00C7058B /* Assets.xcassets */,
-				0FCF77261F20FEDA00C7058B /* LaunchScreen.storyboard */,
-				0FCF77291F20FEDA00C7058B /* Info.plist */,
-				0FCF772F1F20FF2000C7058B /* VideoRenderer.swift */,
-				0FCF77311F20FF5700C7058B /* PhotosUtil.swift */,
-				0FCF77331F20FF6400C7058B /* FileUtil.swift */,
-				0F2E6F311F2A76EE001F014E /* DemoCubeScene.swift */,
+				0F2E6F341F2A8E34001F014E /* Demo */,
+				0F2E6F331F2A8E26001F014E /* Pod */,
 			);
 			path = SceneKit2Video;
 			sourceTree = "<group>";
@@ -108,6 +124,7 @@
 				TargetAttributes = {
 					0FCF77191F20FEDA00C7058B = {
 						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = QUT3GY8XHF;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -278,6 +295,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = QUT3GY8XHF;
 				INFOPLIST_FILE = SceneKit2Video/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SceneKit2Video;
@@ -290,6 +308,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = QUT3GY8XHF;
 				INFOPLIST_FILE = SceneKit2Video/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SceneKit2Video;
