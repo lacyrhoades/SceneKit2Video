@@ -105,7 +105,6 @@
 				TargetAttributes = {
 					0FCF77191F20FEDA00C7058B = {
 						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = QUT3GY8XHF;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -275,7 +274,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QUT3GY8XHF;
 				INFOPLIST_FILE = SceneKit2Video/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SceneKit2Video;
@@ -288,7 +286,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QUT3GY8XHF;
 				INFOPLIST_FILE = SceneKit2Video/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.SceneKit2Video;
