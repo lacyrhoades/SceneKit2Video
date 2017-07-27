@@ -31,8 +31,6 @@ class DemoCubeScene: SCNScene {
         self.background.contents = UIColor.black
         
         let redMaterial = SCNMaterial()
-        redMaterial.diffuse.contents = UIColor.red
-        redMaterial.specular.contents = UIColor.white
         
         let cube = SCNBox(width: 35, height: 35, length: 35, chamferRadius: 0)
         cube.materials = [redMaterial]
