@@ -15,7 +15,7 @@ class FileUtil {
             do {
                 try FileManager.default.removeItem(atPath: url.path)
             } catch {
-                print("Problem with deleting file in FileUtil ".appending(url.path))
+                log("FileUtil", "Problem with deleting file in FileUtil ".appending(url.path))
                 return false
             }
         }
@@ -28,10 +28,10 @@ class FileUtil {
         let manager = FileManager.default
         if manager.fileExists(atPath: dirPath) == false {
             do {
-                print("Creating directory at: ".appending(dirPath))
+                log("FileUtil", "Creating directory at: ".appending(dirPath))
                 try manager.createDirectory(atPath: dirPath, withIntermediateDirectories: true, attributes: nil)
             } catch {
-                print("Problem creating directory at: ".appending(dirPath))
+                log("FileUtil", "Problem creating directory at: ".appending(dirPath))
                 return false
             }
         }
@@ -39,8 +39,8 @@ class FileUtil {
         return true
     }
     
-    class func cleanDirUsingFile(at url: URL) {
-        let dirPath = url.deletingLastPathComponent().path
+    class func cleanDir(at url: URL) {
+        let dirPath = url.path
         let manager = FileManager.default
     
         var contents: [String] = []
@@ -48,13 +48,12 @@ class FileUtil {
         do {
             contents = try manager.contentsOfDirectory(atPath: dirPath)
         } catch {
-            print("Cleanup failed")
-            print("Can't get contents of dir ", dirPath)
+            log("FileUtil", "Cleanup failed, can't get contents of dir: ".appending(dirPath))
             do {
-                print("Creating dir ".appending(dirPath))
+                log("FileUtil", "Creating dir ".appending(dirPath))
                 try manager.createDirectory(atPath: dirPath, withIntermediateDirectories: true, attributes: nil)
             } catch {
-                print("Could not create dir")
+                log("FileUtil", "Could not create dir")
             }
             
             return
@@ -65,9 +64,9 @@ class FileUtil {
             
             do {
                 try manager.removeItem(atPath: filepath)
-                print("Removed old file: ", file)
+                log("FileUtil", "Removed old file: ".appending(file))
             } catch {
-                print("Trouble removing old file:", filepath)
+                log("FileUtil", "Trouble removing old file: ".appending(filepath))
             }
         }
     }

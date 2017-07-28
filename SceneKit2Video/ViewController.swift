@@ -12,32 +12,32 @@ class ViewController: UIViewController {
     
     @IBOutlet var imageView: UIImageView?
     
-    var rendersInProgress: Int = 0
-    var filesQueue = DispatchQueue(label: "net.colordeaf.SceneKit2Video.FilesQueue")
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Renders while showing output on self.view
-        self.renderScene(withRotations: 1, withDelegate: self)
+        SceneKit2Video.Logger.isEnabled = true
         
-        // You can also render "headeless" in the background
-        self.renderScene(withRotations: 3)
+        let scene = DemoCubeScene(rotations: 2) // any SCNScene object or subclass
+        self.renderScene(scene: scene, withDelegate: self) // Renders while showing output on self.view
+        
+        for r in 2...10 {
+            // You can also render arbitrary scenes in the background
+            let scene = DemoCubeScene(rotations: r)
+            self.renderScene(scene: scene)
+        }
     }
     
-    func renderScene(withRotations rotations: Int, withDelegate delegate: VideoRendererDelegate? = nil) {
-        self.filesQueue.sync {
-            self.rendersInProgress += 1
-        }
-        
-        let scene = DemoCubeScene(rotations: rotations) // any SCNScene object / subclass
-        
+    func renderScene(scene: DemoCubeScene, withDelegate delegate: VideoRendererDelegate? = nil) {
         var options = VideoRendererOptions()
         options.sceneDuration = scene.duration
         options.videoSize = CGSize(width: 1280, height: 720)
         options.fps = 60
         
         let startTime = Date()
+        log(
+            "ViewController",
+            String(format: "Starting render: %d", scene.hash)
+        )
         
         let videoRenderer = VideoRenderer()
         videoRenderer.delegate = delegate
@@ -48,36 +48,28 @@ class ViewController: UIViewController {
                 return scene.isDone
             },
             andThen: {
-                outputURL in
+                outputURL, cleanupFiles in
                 
-                print(
+                log("ViewController",
                     String(
-                        format:"Finished render in time: %.2fs",
+                        format:"Finished render of %d in time: %.2fs",
+                        scene.hash,
                         startTime.timeIntervalSinceNow * -1
                     )
                 )
                 
                 PhotosUtil.saveVideo(at: outputURL, andThen: {
-                    self.cleanupOldFiles()
+                    // I'm done with the video file now
+                    cleanupFiles()
                 })
                 
-                let alert = UIAlertController(title: "Done", message: "A new video has been added to the Camera Roll", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true)
+                if self.presentedViewController == nil {
+                    let alert = UIAlertController(title: "Done", message: "A new video has been added to the Camera Roll", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true)
+                }
             }
         )
-    }
-    
-    func cleanupOldFiles() {
-        self.filesQueue.sync {
-            self.rendersInProgress -= 1
-            
-            assert(self.rendersInProgress >= 0, "Should never decrement this below zero")
-            
-            if self.rendersInProgress == 0 {
-                VideoRenderer.cleanUpTemporaryFiles()
-            }
-        }
     }
 }
 
@@ -89,6 +81,6 @@ extension ViewController: VideoRendererDelegate {
     }
     
     func videoRenderer(progressUpdated to: Float) {
-        // print(to)
+        // log("VideoRenderer", to)
     }
 }

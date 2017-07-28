@@ -10,19 +10,20 @@ import Foundation
 import Photos
 
 class PhotosUtil {
+    static let saveQueue = DispatchQueue(label: "net.colordeaf.SceneKit2Video.SaveVideos")
+    
     static func saveVideo(at url: URL, andThen: @escaping () -> ()) {
-        assert(FileUtil.fileExists(at: url), "Check for file output")
+        assert(FileUtil.fileExists(at: url), "Check for file output!")
         
-        DispatchQueue.global(qos: .utility).async {
+        PhotosUtil.saveQueue.async {
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
             }) { (done, err) in
                 if err != nil {
-                    print("Tried to save video at path: ".appending(url.path))
-                    print("Error creating video file in library")
-                    print(err?.localizedDescription as Any)
+                    log("PhotosUtil", "Tried (and failed) to save video at path: ".appending(url.path))
+                    log("PhotosUtil", "Error creating video file in library: ".appending(err?.localizedDescription ?? "None"))
                 } else {
-                    print("Done writing asset to the user's photo library")
+                    log("PhotosUtil", "Done writing asset to the user's library")
                 }
                 
                 andThen()

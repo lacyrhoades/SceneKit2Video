@@ -10,15 +10,15 @@ import SceneKit
 
 class DemoCubeScene: SCNScene {
     var isDone: Bool {
-        return self.rotations >= self.maxRotations
+        return self.rotationsSoFar >= self.rotations
     }
     
-    private var rotations: Int = 0
-    private var maxRotations: Int = 1
+    private(set) var rotations: Int = 1
+    private var rotationsSoFar: Int = 0
     private var rotationDuration: TimeInterval = 3.0
     
     var duration: TimeInterval {
-        return self.rotationDuration * TimeInterval(self.maxRotations)
+        return self.rotationDuration * TimeInterval(self.rotations)
     }
     
     convenience init(rotations: Int) {
@@ -26,7 +26,7 @@ class DemoCubeScene: SCNScene {
         
         precondition(rotations >= 1)
         
-        self.maxRotations = rotations
+        self.rotations = rotations
         
         self.background.contents = UIColor.black
         
@@ -55,7 +55,7 @@ class DemoCubeScene: SCNScene {
                     [
                         SCNAction.rotateBy(x: 0.0, y: 2 * CGFloat.pi, z: 2 * CGFloat.pi, duration: self.rotationDuration),
                         SCNAction.run({ (node) in
-                            self.rotations += 1
+                            self.rotationsSoFar += 1
                         })
                     ]
                 )

@@ -24,6 +24,10 @@ public struct VideoRendererOptions {
     }
 }
 
+public typealias IsDone = () -> (Bool)
+public typealias Cleanup = () -> ()
+public typealias RenderDone = (_: URL, _: @escaping Cleanup) -> ()
+
 public class VideoRenderer {
     public weak var delegate: VideoRendererDelegate?
     
@@ -31,114 +35,119 @@ public class VideoRenderer {
 
     }
     
-    private var renderer: SCNRenderer!
+    private static var renderQueue = DispatchQueue(label: "net.colordeaf.SceneKit2Video.RenderQueue")
+    private static let renderSemaphore = DispatchSemaphore(value: 3)
     
-    private var frameNumber: Int = 0
-    
-    private var scene: SCNScene?
-    private var assetWriter: AVAssetWriter?
-    private var assetWriterInput: AVAssetWriterInput?
+    private let frameQueue = DispatchQueue(label: "net.colordeaf.SceneKit2Video.RenderFrames")
 
-    private static var filesQueue = DispatchQueue(label: "net.colordeaf.SceneKit2Video.filesQueue")
+    public func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping IsDone, andThen: @escaping RenderDone ) {
+
+        VideoRenderer.renderQueue.async {
+            VideoRenderer.renderSemaphore.wait()
+            self.doRender(scene: scene, withOptions: options, until: until) {
+                url in
+                VideoRenderer.renderSemaphore.signal()
+                andThen(url) {
+                    FileUtil.removeFile(at: url)
+                }
+            }
+        }
+    }
     
-    public func render(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: URL) -> () ) {
-        
+    public func doRender(scene: SCNScene, withOptions options: VideoRendererOptions, until: @escaping () -> (Bool), andThen: @escaping (_: URL) -> () ) {
         let videoSize = options.videoSize
-        
         let fps: Int32 = Int32(options.fps)
         let intervalDuration = CFTimeInterval(1.0 / Double(fps))
-        let kTimescale: Int32 = 600
-        let frameDuration = CMTimeMake(Int64(kTimescale / fps), kTimescale)
+        let timescale: Float = 600
+        let kTimescale: Int32 = Int32(timescale)
+        let frameDuration = CMTimeMake(
+            Int64( floor(timescale / Float(options.fps)) ),
+            kTimescale
+        )
         
-        self.frameNumber = 0
+        var frameNumber = 0
         var totalFrames: Int?
         if let totalTime = options.sceneDuration {
             totalFrames = Int(fps) * Int(ceil(totalTime))
         }
         
-        self.renderer = SCNRenderer(device: nil, options: nil)
-        self.renderer.scene = scene
-        self.renderer.autoenablesDefaultLighting = true
+        let renderer = SCNRenderer(device: nil, options: nil)
+        renderer.scene = scene
+        renderer.autoenablesDefaultLighting = true
         
-        VideoRenderer.filesQueue.async {
-            let url = FileUtil.newTempFileURL
-            
-            if FileUtil.fileExists(at: url) {
-                FileUtil.removeFile(at: url)
-            } else {
-                FileUtil.mkdirUsingFile(at: url)
-            }
-            
-            do {
-                self.assetWriter = try AVAssetWriter(outputURL: url, fileType: AVFileTypeAppleM4V)
-            } catch {
-                assert(false, error.localizedDescription)
-                return
-            }
-            
-            let settings: [String: Any] = [
-                AVVideoCodecKey: AVVideoCodecH264,
-                AVVideoWidthKey: videoSize.width,
-                AVVideoHeightKey: videoSize.height
-            ]
-            self.assetWriterInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: settings)
-            
-            guard let input = self.assetWriterInput else {
-                assert(false, "Could not create asset writer input")
-                return
-            }
-            
-            input.expectsMediaDataInRealTime = false
-            self.assetWriter?.add(input)
-            
-            let attributes: [String: Any] = [
-                kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32ARGB),
-                kCVPixelBufferWidthKey as String: videoSize.width,
-                kCVPixelBufferHeightKey as String: videoSize.height
-            ]
-            
-            let pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(
-                assetWriterInput: input,
-                sourcePixelBufferAttributes: attributes
-            )
-            
-            self.assetWriter?.startWriting()
-            self.assetWriter?.startSession(atSourceTime: kCMTimeZero)
-            
-            self.assetWriterInput?.requestMediaDataWhenReady(on: DispatchQueue.global(), using: {
-                if until() {
-                    self.assetWriterInput?.markAsFinished()
-                    self.assetWriter?.finishWriting {
-                        DispatchQueue.main.async {
-                            andThen(url)
-                        }
-                        return
-                    }
-                } else if self.assetWriterInput?.isReadyForMoreMediaData ?? false {
-                    guard let pool = pixelBufferAdaptor.pixelBufferPool else {
-                        fatalError("Could not get a pixel buffer pool")
-                    }
-                    
-                    let snapshotTime = CFTimeInterval(intervalDuration * CFTimeInterval(self.frameNumber))
-                    let presentationTime = CMTimeMultiply(frameDuration, Int32(self.frameNumber))
-                    let image = self.renderer.snapshot(atTime: snapshotTime, with: videoSize, antialiasingMode: SCNAntialiasingMode.multisampling4X)
-                    let pixelBuffer = VideoRenderer.pixelBuffer(withSize: videoSize, fromImage: image, usingBufferPool: pool)
-                    pixelBufferAdaptor.append(
-                        pixelBuffer,
-                        withPresentationTime: presentationTime
-                    )
-                    
-                    self.frameNumber += 1
-                    
-                    self.delegate?.videoRenderer(createdNewImage: image)
-                    if let totalFrames = totalFrames {
-                        self.delegate?.videoRenderer(
-                            progressUpdated: min(1, Float(self.frameNumber)/Float(totalFrames))
-                        )
-                    }
-                }
-            })
+        let url = FileUtil.newTempFileURL
+    
+        if FileUtil.fileExists(at: url) {
+            FileUtil.removeFile(at: url)
+        } else {
+            FileUtil.mkdirUsingFile(at: url)
         }
+    
+        var assetWriter: AVAssetWriter
+        do {
+            assetWriter = try AVAssetWriter(outputURL: url, fileType: AVFileTypeAppleM4V)
+        } catch {
+            assert(false, error.localizedDescription)
+            return
+        }
+        
+        let settings: [String: Any] = [
+            AVVideoCodecKey: AVVideoCodecH264,
+            AVVideoWidthKey: videoSize.width,
+            AVVideoHeightKey: videoSize.height
+        ]
+    
+        let input = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: settings)
+        // input.expectsMediaDataInRealTime = false
+        assetWriter.add(input)
+        
+        let attributes: [String: Any] = [
+            kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32ARGB),
+            kCVPixelBufferWidthKey as String: videoSize.width,
+            kCVPixelBufferHeightKey as String: videoSize.height
+        ]
+        
+        let pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(
+            assetWriterInput: input,
+            sourcePixelBufferAttributes: attributes
+        )
+        
+        assetWriter.startWriting()
+        assetWriter.startSession(atSourceTime: kCMTimeZero)
+        
+        input.requestMediaDataWhenReady(on: self.frameQueue, using: {
+            
+            if until() {
+                input.markAsFinished()
+                assetWriter.finishWriting {
+                    DispatchQueue.main.async {
+                        andThen(url)
+                    }
+                    return
+                }
+            } else if input.isReadyForMoreMediaData, let pool = pixelBufferAdaptor.pixelBufferPool {
+                let snapshotTime = CFTimeInterval(intervalDuration * CFTimeInterval(frameNumber))
+                let presentationTime = CMTimeMultiply(frameDuration, Int32(frameNumber))
+                let image = renderer.snapshot(atTime: snapshotTime, with: videoSize, antialiasingMode: SCNAntialiasingMode.multisampling4X)
+                let pixelBuffer = VideoRenderer.pixelBuffer(withSize: videoSize, fromImage: image, usingBufferPool: pool)
+                pixelBufferAdaptor.append(
+                    pixelBuffer,
+                    withPresentationTime: presentationTime
+                )
+                
+                frameNumber += 1
+                
+                self.delegate?.videoRenderer(createdNewImage: image)
+                if let totalFrames = totalFrames {
+                    self.delegate?.videoRenderer(
+                        progressUpdated: min(1, Float(frameNumber)/Float(totalFrames))
+                    )
+                }
+            } else if input.isReadyForMoreMediaData {
+                warn("VideoRenderer", String(format: "Input ready, no pixel buffer pool: %d", scene.hash))
+            }
+            
+        })
     }
     
     class func pixelBuffer(withSize size: CGSize, fromImage image: UIImage, usingBufferPool pool: CVPixelBufferPool) -> CVPixelBuffer {
@@ -178,9 +187,5 @@ public class VideoRenderer {
         CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags.readOnly)
         
         return pixelBuffer
-    }
-    
-    public static func cleanUpTemporaryFiles() {
-        FileUtil.cleanDirUsingFile(at: FileUtil.newTempFileURL)
     }
 }
