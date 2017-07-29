@@ -18,7 +18,8 @@ public struct VideoRendererOptions {
     public var sceneDuration: TimeInterval?
     public var videoSize = CGSize(width: 1280, height: 720)
     public var fps: Int = 60
-    
+    public var outputUrl: URL?
+
     public init() {
         
     }
@@ -75,7 +76,7 @@ public class VideoRenderer {
         renderer.scene = scene
         renderer.autoenablesDefaultLighting = true
         
-        let url = FileUtil.newTempFileURL
+        let url = options.outputUrl ?? FileUtil.newTempFileURL
     
         if FileUtil.fileExists(at: url) {
             FileUtil.removeFile(at: url)
