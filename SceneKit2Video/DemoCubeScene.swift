@@ -37,7 +37,7 @@ class DemoCubeScene: SCNScene {
         for (xPos, color) in cubes {
             let material = SCNMaterial()
             material.diffuse.contents = color
-            material.specular.contents = color
+            material.specular.contents = UIColor.white
             let cube = SCNBox(width: 35, height: 35, length: 35, chamferRadius: 0)
             cube.materials = [material]
             let wrapperNode = SCNNode(geometry: cube)
