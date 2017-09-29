@@ -17,21 +17,24 @@ class ViewController: UIViewController {
         
         SceneKit2Video.Logger.isEnabled = true
         
-        let scene = DemoCubeScene(rotations: 2) // any SCNScene object or subclass
+        let scene = DemoCubeScene(rotations: 6) // any SCNScene object or subclass
         self.renderScene(scene: scene, withDelegate: self) // Renders while showing output on self.view
         
-        for r in 2...10 {
+        /*
+        for r in 1...10 {
             // You can also render arbitrary scenes in the background
             let scene = DemoCubeScene(rotations: r)
             self.renderScene(scene: scene)
         }
+         */
     }
     
     func renderScene(scene: DemoCubeScene, withDelegate delegate: VideoRendererDelegate? = nil) {
         var options = VideoRendererOptions()
         options.sceneDuration = scene.duration
-        options.videoSize = CGSize(width: 1280, height: 720)
+        options.videoSize = CGSize(width: 3840, height: 2160)
         options.fps = 60
+        options.overlayImage = UIImage(named: "demo-overlay")
         
         let startTime = Date()
         log(

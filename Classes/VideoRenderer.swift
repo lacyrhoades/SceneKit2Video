@@ -18,6 +18,7 @@ public struct VideoRendererOptions {
     public var sceneDuration: TimeInterval?
     public var videoSize = CGSize(width: 1280, height: 720)
     public var fps: Int = 60
+    public var overlayImage: UIImage?
     
     public init() {
         
@@ -128,7 +129,12 @@ public class VideoRenderer {
             } else if input.isReadyForMoreMediaData, let pool = pixelBufferAdaptor.pixelBufferPool {
                 let snapshotTime = CFTimeInterval(intervalDuration * CFTimeInterval(frameNumber))
                 let presentationTime = CMTimeMultiply(frameDuration, Int32(frameNumber))
-                let image = renderer.snapshot(atTime: snapshotTime, with: videoSize, antialiasingMode: SCNAntialiasingMode.multisampling4X)
+                var image = renderer.snapshot(atTime: snapshotTime, with: videoSize, antialiasingMode: SCNAntialiasingMode.multisampling4X)
+                
+                if let overlay = options.overlayImage {
+                    image = image.imageByOverlaying(image: overlay)
+                }
+                
                 let pixelBuffer = VideoRenderer.pixelBuffer(withSize: videoSize, fromImage: image, usingBufferPool: pool)
                 pixelBufferAdaptor.append(
                     pixelBuffer,

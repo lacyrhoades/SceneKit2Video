@@ -15,7 +15,7 @@ class DemoCubeScene: SCNScene {
     
     private(set) var rotations: Int = 1
     private var rotationsSoFar: Int = 0
-    private var rotationDuration: TimeInterval = 3.0
+    private var rotationDuration: TimeInterval = 4.0
     
     var duration: TimeInterval {
         return self.rotationDuration * TimeInterval(self.rotations)
@@ -30,13 +30,22 @@ class DemoCubeScene: SCNScene {
         
         self.background.contents = UIColor.black
         
-        let redMaterial = SCNMaterial()
+        var cubeGeometryNodes: [SCNNode] = []
         
-        let cube = SCNBox(width: 35, height: 35, length: 35, chamferRadius: 0)
-        cube.materials = [redMaterial]
-        let cubeGeometryNode = SCNNode(geometry: cube)
-        cubeGeometryNode.position = SCNVector3Make(0.0, 0.0, -75.0)
-        self.rootNode.addChildNode(cubeGeometryNode)
+        let cubes: Array<(Float, UIColor)> = [(-70.0, UIColor.red), (0.0, UIColor.yellow), (70.0, UIColor.green)]
+        
+        for (xPos, color) in cubes {
+            let material = SCNMaterial()
+            material.diffuse.contents = color
+            material.specular.contents = color
+            let cube = SCNBox(width: 35, height: 35, length: 35, chamferRadius: 0)
+            cube.materials = [material]
+            let wrapperNode = SCNNode(geometry: cube)
+            wrapperNode.position = SCNVector3Make(xPos, 0.0, -75.0)
+            self.rootNode.addChildNode(wrapperNode)
+            
+            cubeGeometryNodes.append(wrapperNode)
+        }
         
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -49,14 +58,28 @@ class DemoCubeScene: SCNScene {
         cameraBoxNode.addChildNode(cameraNode)
         self.rootNode.addChildNode(cameraBoxNode)
         
-        cubeGeometryNode.runAction(
+        for node in cubeGeometryNodes {
+            node.runAction(
+                SCNAction.repeatForever(
+                    SCNAction.sequence(
+                        [
+                            SCNAction.rotateBy(x: 0.0, y: 2 * CGFloat.pi, z: 2 * CGFloat.pi, duration: self.rotationDuration),
+                            SCNAction.run({ (node) in
+                                self.rotationsSoFar += 1
+                            })
+                        ]
+                    )
+                )
+            )
+        }
+        
+        cameraBoxNode.runAction(
             SCNAction.repeatForever(
                 SCNAction.sequence(
                     [
-                        SCNAction.rotateBy(x: 0.0, y: 2 * CGFloat.pi, z: 2 * CGFloat.pi, duration: self.rotationDuration),
-                        SCNAction.run({ (node) in
-                            self.rotationsSoFar += 1
-                        })
+                        SCNAction.rotateBy(x: 0.0, y: 0.6, z: 0.0, duration: 2.0),
+                        SCNAction.rotateBy(x: 0.0, y: -1.2, z: 0.0, duration: 2.0),
+                        SCNAction.rotateBy(x: 0.0, y: 0.6, z: 0.0, duration: 2.0)
                     ]
                 )
             )
