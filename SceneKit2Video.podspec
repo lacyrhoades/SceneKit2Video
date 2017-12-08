@@ -17,7 +17,7 @@ from there.
   s.source           = { :git => 'https://github.com/lacyrhoades/SceneKit2Video.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/lacyrhoades'
 
-  s.ios.deployment_target = '9.3'
+  s.ios.deployment_target = '10.0'
 
   s.source_files = 'Classes/**/*'
 end
