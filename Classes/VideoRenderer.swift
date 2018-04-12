@@ -86,7 +86,7 @@ public class VideoRenderer {
     
         var assetWriter: AVAssetWriter
         do {
-            assetWriter = try AVAssetWriter(outputURL: url, fileType: AVFileTypeAppleM4V)
+            assetWriter = try AVAssetWriter(outputURL: url, fileType: .m4v)
         } catch {
             assert(false, error.localizedDescription)
             return
@@ -98,7 +98,7 @@ public class VideoRenderer {
             AVVideoHeightKey: videoSize.height
         ]
     
-        let input = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: settings)
+        let input = AVAssetWriterInput(mediaType: .video, outputSettings: settings)
         // input.expectsMediaDataInRealTime = false
         assetWriter.add(input)
         
