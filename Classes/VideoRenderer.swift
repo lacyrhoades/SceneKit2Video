@@ -132,7 +132,7 @@ public class VideoRenderer {
                 var image = renderer.snapshot(atTime: snapshotTime, with: videoSize, antialiasingMode: SCNAntialiasingMode.multisampling4X)
                 
                 if let overlay = options.overlayImage {
-                    image = image.imageByOverlaying(image: overlay)
+                    image = image.imageByOverlaying(overlay)
                 }
                 
                 let pixelBuffer = VideoRenderer.pixelBuffer(withSize: videoSize, fromImage: image, usingBufferPool: pool)

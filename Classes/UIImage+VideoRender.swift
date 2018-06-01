@@ -9,12 +9,29 @@
 import UIKit
 
 extension UIImage {
-    func imageByOverlaying(image: UIImage) -> UIImage {
-        let selfRect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height)
-        UIGraphicsBeginImageContext( self.size );
-        self.draw(in: selfRect);
-        image.draw(in: selfRect, blendMode: .normal, alpha: 1.0)
-        let maybeResult = UIGraphicsGetImageFromCurrentImageContext();
+    func imageByOverlaying(_ overlay: UIImage) -> UIImage {
+        let size = self.size
+        let overlaySize = overlay.size
+        
+        var scale: CGFloat
+        if size.height > size.width {
+            scale = size.width / overlaySize.width
+        } else {
+            scale = size.height / overlaySize.height
+        }
+        
+        let scaledSize = CGSize(width: overlaySize.width * scale, height: overlaySize.height * scale)
+        
+        let xOffset = (size.width - scaledSize.width) / 2.0
+        let yOffset = (size.height - scaledSize.height) / 2.0
+        
+        let selfRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        let scaledOverlayRect = CGRect(x: xOffset, y: yOffset, width: scaledSize.width, height: scaledSize.height)
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, self.scale);
+        self.draw(in: selfRect)
+        overlay.draw(in: scaledOverlayRect)
+        let maybeResult = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
         guard let result = maybeResult else {
