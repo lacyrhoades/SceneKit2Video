@@ -62,8 +62,8 @@ public class VideoRenderer {
         let timescale: Float = 600
         let kTimescale: Int32 = Int32(timescale)
         let frameDuration = CMTimeMake(
-            Int64( floor(timescale / Float(options.fps)) ),
-            kTimescale
+            value: Int64( floor(timescale / Float(options.fps)) ),
+            timescale: kTimescale
         )
         
         var frameNumber = 0
@@ -114,7 +114,7 @@ public class VideoRenderer {
         )
         
         assetWriter.startWriting()
-        assetWriter.startSession(atSourceTime: kCMTimeZero)
+        assetWriter.startSession(atSourceTime: .zero)
         
         input.requestMediaDataWhenReady(on: self.frameQueue, using: {
             
@@ -128,7 +128,7 @@ public class VideoRenderer {
                 }
             } else if input.isReadyForMoreMediaData, let pool = pixelBufferAdaptor.pixelBufferPool {
                 let snapshotTime = CFTimeInterval(intervalDuration * CFTimeInterval(frameNumber))
-                let presentationTime = CMTimeMultiply(frameDuration, Int32(frameNumber))
+                let presentationTime = CMTimeMultiply(frameDuration, multiplier:  Int32(frameNumber))
                 var image = renderer.snapshot(atTime: snapshotTime, with: videoSize, antialiasingMode: SCNAntialiasingMode.multisampling4X)
                 
                 if let overlay = options.overlayImage {
